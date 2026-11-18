@@ -3,6 +3,8 @@
 
 用法：
     python3 validate_prd.py [需求名/需求文档/需求名-PRD.html ...]
+    python3 validate_prd.py --full 需求名-PRD.html
+    python3 validate_prd.py --full --omit-chapter 附录 需求名-PRD.html
     py -3 validate_prd.py …            # Windows 上没有 python3 命令
 
 不带参数时，从当前目录向下查找所有 *-PRD.html 逐个校验。
@@ -13,6 +15,7 @@
 文档级 style 位置、章节编号连续性。
 视觉类检查（遮挡、字号、配色统一）仍需人工按 §4.3 / §4.6 核对。
 """
+import argparse
 import sys
 import re
 from pathlib import Path
@@ -22,6 +25,10 @@ VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input",
         "link", "meta", "param", "source", "track", "wbr"}
 
 CORE_SECTIONS = ["项目信息", "版本记录", "需求背景", "需求目标", "详细方案"]
+FULL_SECTIONS = [
+    "项目信息", "版本记录", "需求背景", "需求目标", "需求概述", "业务流程图",
+    "交互流程图", "详细方案", "数据埋点", "时序图", "上线计划", "附录",
+]
 
 SCHEMAS = {
     "version-table":  ["版本", "日期", "修订人", "修订说明"],
@@ -105,15 +112,30 @@ def _section_of(root):
     return lookup
 
 
-def validate_prd(content):
+def validate_prd(content, *, expected_sections=None):
     root = Tree(content).root
-    h2 = [n.text().strip() for n in root.find("h2")]
+    main_nodes = [m for m in root.find("main") if m.attrs.get("id") == "prdContent"]
+    chapters = main_nodes[0] if expected_sections is not None and main_nodes else root
+    h2 = [n.text().strip() for n in chapters.find("h2")]
     errors = []
 
     # ---- 1. 核心章节与独立性 ----
-    for name in CORE_SECTIONS:
+    required_core = CORE_SECTIONS if expected_sections is None else [
+        name for name in CORE_SECTIONS if name in expected_sections
+    ]
+    for name in required_core:
         if not any(h.endswith(name) for h in h2):
             errors.append("缺少独立章节：" + name)
+    if expected_sections is not None:
+        actual_sections = [
+            re.sub(r"^(?:[📋📝]|[一二三四五六七八九十]+、)\s*", "", heading).removesuffix("（功能清单）")
+            for heading in h2
+        ]
+        if actual_sections != expected_sections:
+            errors.append(
+                "章节与确认清单不一致，应为：" + " → ".join(expected_sections)
+                + "（实际：" + " → ".join(actual_sections) + "）"
+            )
     if any("项目信息" in h and "版本记录" in h for h in h2):
         errors.append("项目信息和版本记录必须分开成两张表/两个章节")
     if any(("边界" in h or "异常处理" in h) for h in h2):
@@ -133,7 +155,9 @@ def validate_prd(content):
     # ---- 3. 固定表头与列数 ----
     for css, expect in SCHEMAS.items():
         tables = root.find("table", css)
-        required = css in {"version-table", "scheme-table"} or any(
+        required = (css == "version-table" and "版本记录" in required_core) or (
+            css == "scheme-table" and "详细方案" in required_core
+        ) or any(
             ("数据埋点" in h if css == "tracking-table"
              else "需求概述" in h if css == "overview-table" else False)
             for h in h2
@@ -152,7 +176,7 @@ def validate_prd(content):
 
     # ---- 4. 项目信息必须独立双列表 ----
     meta = root.find("table", "meta-table")
-    if not meta:
+    if not meta and "项目信息" in required_core:
         errors.append("项目信息应使用独立 meta-table")
     else:
         for table in meta:
@@ -212,7 +236,6 @@ def validate_prd(content):
     # ---- 7. 文档级 style 必须在 #prdContent 内（一键复制全文才带得走样式）----
     # 只做"存在性"判定：<head> 放公共骨架样式、正文样式放 <main> 内是正常分工，
     # 但 #prdContent 内必须至少有一份正文样式，否则复制出去的正文会掉格式。
-    main_nodes = [m for m in root.find("main") if m.attrs.get("id") == "prdContent"]
     if not main_nodes:
         errors.append("缺少 <main id=\"prdContent\"> 正文容器")
     elif not any(m.find("style") for m in main_nodes):
@@ -233,8 +256,17 @@ def validate_prd(content):
 
 
 def main(argv):
-    if len(argv) > 1:
-        files = [Path(p) for p in argv[1:]]
+    parser = argparse.ArgumentParser(description="检查 HTML PRD 格式与章节顺序")
+    parser.add_argument("--full", action="store_true", help="检查完整 12 章及顺序")
+    parser.add_argument("--omit-chapter", choices=FULL_SECTIONS, action="append", default=[],
+                        help="核对剩余章节，逐项列出用户明确确认省略的章名")
+    parser.add_argument("files", type=Path, nargs="*")
+    args = parser.parse_args(argv[1:])
+    expected_sections = None
+    if args.full or args.omit_chapter:
+        expected_sections = [name for name in FULL_SECTIONS if name not in args.omit_chapter]
+    if args.files:
+        files = args.files
     else:
         # 默认只扫 `[需求名]/需求文档/*-PRD.html`——项目里的历史 PRD / 分享源文件 /
         # 需求挖掘目录下的旧稿不按本规范撰写，扫进来只会制造噪音。
@@ -248,7 +280,7 @@ def main(argv):
     failed = 0
     for path in files:
         try:
-            validate_prd(path.read_text(encoding="utf-8"))
+            validate_prd(path.read_text(encoding="utf-8"), expected_sections=expected_sections)
             print("PASS  " + str(path))
         except ValueError as exc:
             failed += 1

@@ -5,13 +5,13 @@ description: 编写或更新可评审的 HTML PRD 和可编辑的 Word PRD，制
 
 # 产品需求文档工作流
 
-从当前 `SKILL.md` 所在目录定位随技能安装的 `assets/` 和 `scripts/`。将产物写入用户指定的项目，缺省使用当前工作区。如果项目已有对应的 `.agents/workflows/` 文件，优先用项目版，否则读下表对应的工作流。按任务使用 Codex 可用的文件读取、搜索和数据工具。
+从当前 `SKILL.md` 所在目录定位随技能安装的 `assets/` 和 `scripts/`。将产物写入用户指定的项目，缺省使用当前工作区。项目版 `.agents/workflows/` 和模板可提供项目样式和约定。PRD 的默认格式、12 章与写前确认规则以下文为准。旧项目模板缺章时参照内置模板补齐。
 
 用户明确指定交付格式或只需要其中一版时，按本次要求交付，并执行下文的章节确认。用 `kw-product:write-spec`（可用时）辅助定义范围和验收标准。
 
 | 用户需要 | 工作流 | 默认产物 |
 |---|---|---|
-| 新写或修改 PRD、交互原型、流程图 | [PRD](assets/workflows/edu-pm-prd.md) | HTML PRD 和 Word PRD，按需配原型和图 |
+| 新写或修改 PRD、交互原型、流程图 | [PRD](assets/workflows/edu-pm-prd.md) | HTML PRD 和 Word PRD，内含业务流程图和交互流程图 |
 | 用户反馈整理、需求洞察 | [需求挖掘](assets/workflows/edu-pm-demand.md) | 需求洞察报告 |
 | 功能验收、上线前产品走查 | [验收](assets/workflows/edu-pm-acceptance.md) | 验收清单 |
 | 业务指标、漏斗、上线复盘 | [数据分析](assets/workflows/edu-pm-data-analysis.md) | 数据分析报告 |
@@ -20,19 +20,19 @@ description: 编写或更新可评审的 HTML PRD 和可编辑的 Word PRD，制
 
 需要同时交付 PRD、原型和验收清单时，先明确需求与验收口径，再用同一份 PRD 驱动原型和清单。本次所有产物放在同一个需求目录。交付前对齐需求编号、页面状态、业务规则与预期结果，引用实际交付的文件。
 
-工作流中的模拟反馈和产物默认值按本入口的适用条件执行。同名需求已有文件夹时复用，按需创建 `需求文档/`、`原型/`、`流程图/`、`需求挖掘/`、`验收清单/` 或 `数据分析/`。HTML PRD 从[正文模板](assets/templates/prd-content.html)开始，交付前用[格式校验器](assets/scripts/validate_prd.py)检查，并核对占位符、业务规则与资源引用。项目已有对应模板或校验器时使用项目版。
+工作流中的模拟反馈和产物默认值按本入口的适用条件执行。同名需求已有文件夹时复用，按需创建 `需求文档/`、`原型/`、`流程图/`、`需求挖掘/`、`验收清单/` 或 `数据分析/`。HTML PRD 从[正文模板](assets/templates/prd-content.html)开始。交付前用[内置格式校验器](assets/scripts/validate_prd.py)对照确认清单检查，并核对占位符、业务规则与资源引用。项目校验可以补充检查。
 
 撰写文档与静态预览可直接使用随技能安装的资源。需要截图导出、复制时内嵌截图或浏览器写回时，复用项目中的导出服务。若需要部署项目资源，用 `python3 <技能目录>/scripts/initialize.py --project <目标目录> --no-launcher` 初始化（Windows 用 `py -3`）。在目标目录用 `python3 scripts/start_service.py --serve` 启动本地导出服务。用户要求 macOS 按需自动启动时可启用 LaunchAgent。工作流中提到的旧技能路径，统一从当前 `SKILL.md` 所在目录定位。
 
 ## PRD 默认格式与章节确认
 
 - 默认同时交付可直接评审的 HTML PRD（`.html`）和可编辑的 Word PRD（`.docx`）。同一版本的两份文件放在该需求的 `需求文档/` 中，使用同一正文、章节清单、需求编号和验收标准。用户明确指定其中一种或其他格式时，按指定格式交付。
-- 固定顺序为 项目信息 → 版本记录 → 需求背景 → 需求目标 → 需求概述 → 业务流程图 → 交互流程图 → 详细方案 → 数据埋点 → 时序图。上线计划、附录按需放在时序图之后。
-- 始终保留项目信息、版本记录、需求背景、需求目标、详细方案。其余七章（需求概述、业务流程图、交互流程图、数据埋点、时序图、上线计划、附录）按需求大小和复杂度逐项判断。异常与边界写入所属功能的【边界说明】。
-- 写新 PRD 或调整现有 PRD 的章节前，先列出拟保留、拟省略的章节及理由，并征得用户确认。简单需求也用一次简短确认。用户已经明确确定了本次所有取舍时，按已确认的清单执行。只修订现有章节内容时沿用已确认的结构。这条确认规则也适用于项目版工作流。
-- 跨角色、多步骤或存在判断分支时优先保留业务流程图，展示责任、交接和判断分支。有跨页面跳转或关键交互状态时优先保留交互流程图，展示页面、触发操作、分支及状态。两章都保留时各自提交对应的图，并链接到实际原型场景。
+- **默认保留全部 12 章**，固定顺序为 项目信息 → 版本记录 → 需求背景 → 需求目标 → 需求概述 → 业务流程图 → 交互流程图 → 详细方案 → 数据埋点 → 时序图 → 上线计划 → 附录。
+- 写新 PRD 或调整现有 PRD 的章节前，按顺序列出本次保留的章节和用户明确要求省略的章节，等用户确认后再写。默认列出全部 12 章，注明「无省略」。通用偏好和其他需求的确认不能代替本次确认。已确认本次章节清单时直接沿用。仅修订现有章节内容时沿用已确认的结构。
+- **只有用户明确指定要省略的章节才裁剪**。小需求、材料不足或内容不涉及该章时保留标题，用简要说明写清「沿用现有」「本次不涉及」或「待确认」。异常与边界写入所属功能的【边界说明】。
+- 业务流程图展示责任、交接和判断分支。交互流程图展示页面、触发操作和状态。有原型时链接到实际场景，简单需求用精简图。某章确实没有适用场景时在章内说明。
 - Word 版使用可编辑的标题、段落和表格。把已确认保留的业务流程图与交互流程图以清晰图片嵌入，保留原型及证据链接，时序图源码保持为可复制文本。使用可用的 `documents:documents` 技能生成并逐页检查 Word 的渲染。
-- 交付前对照确认清单检查两版的实际章节、顺序、流程图、原型与证据链接。HTML 运行格式校验器，Word 核对布局、关键内容与可编辑性。
+- 交付前对照确认清单检查两版的实际章节、顺序、流程图、原型与证据链接。完整 HTML 用内置格式校验器运行 `validate_prd.py --full <PRD.html>`。用户明确指定省略时，对每个已确认省略的章节加一次 `--omit-chapter 章名`。Word 核对布局、关键内容与可编辑性。
 
 ## 搭配已安装的 Codex 插件
 
@@ -57,7 +57,7 @@ description: 编写或更新可评审的 HTML PRD 和可编辑的 Word PRD，制
 - **需求概述 is more than a feature list** (§2.2 ⑤): it carries a **范围块** (本期范围 / 本期不做什么·暂不展开) plus the feature-list table plus, when needed, the cross-page rule tables (`h3` + small table). If the whole chapter is dropped for a small requirement, the 范围块 and rule tables must relocate — 功能清单 may go, but "what we are NOT doing" and the shared rules may not.
 - **需求背景 is three parts** (§2.2 ⑥): who hits what problem in what scenario → what impact it has → what evidence supports it (state plainly when there is none; never invent). **需求目标** closes with a 「待后续确认的产品口径」 list collecting every 待确认 in the document, each with owner and impact.
 - **The edit module ships undo/redo** (§2.7 ⑤): ⌘Z / Ctrl+Z undo, ⌘⇧Z / Ctrl+Y (also Ctrl+⇧Z) redo, covering text edits, row add/delete, table delete and column/row resize on one stack; a new edit clears the redo branch. Deleted rows/tables are kept alive as **DOM nodes** in the stack (not HTML strings) so restored controls still work, and the native contenteditable undo must be `preventDefault`ed in the capture phase or both stacks fire at once. History is memory-only — never promise it survives a refresh.
-- **时序图 (sequence diagram)** is an optional dev/QA-facing PRD chapter placed AFTER 数据埋点 (the last body chapter): copyable **Mermaid source-code text blocks — never rendered images or iframes** (devs/QA reuse the text directly; a rendered picture was rejected). Contains an end-side orchestration `sequenceDiagram` (real participants, e.g. 用户/端/Cocos/服务端) plus a key-object `stateDiagram-v2`, each block with a "复制源码" button and 说明 bullets. Technical field/interface names ARE allowed in this chapter (the §2.3.1 ban only covers 详细方案 description cells). See edu-pm-prd.md §4.7.
+- 时序图放在数据埋点之后、上线计划之前。用可复制的 Mermaid 文本交代实际参与方与关键状态，写法见 edu-pm-prd.md §4.7。
 - **交互流程图 (screen flow)** is an optional PRD chapter placed before 详细方案: one whole image-style HTML canvas stitching all core screens (scaled live prototype iframes) with labeled **right-angle (Manhattan-routed) arrows** for navigation — never bezier curves or diagonal lines; same-side loop-back edges run on offset rails — plus an explicit state-machine legend. Produce per edu-pm-prd.md §4.6; export via the local screenshot service.
 - Keep PRD, prototype, and flowchart synchronized. When one changes, inspect the other two for necessary updates.
 - The HTML prototype is the primary interactive artifact. Pencil is optional visual enhancement only.
