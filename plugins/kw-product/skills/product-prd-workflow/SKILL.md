@@ -1,28 +1,38 @@
 ---
 name: product-prd-workflow
-description: 产品管理的统一入口，用于编写或更新 PRD、制作可点击的 HTML 原型与流程图、编写功能验收清单，支持单项交付和整套交付。也用于整理用户反馈与复盘指标。
+description: 编写或更新可评审的 HTML PRD 和可编辑的 Word PRD，制作可点击的原型与流程图，编写功能验收清单。也用于整理用户反馈与复盘指标。
 ---
 
 # 产品需求文档工作流
 
 从当前 `SKILL.md` 所在目录定位随技能安装的 `assets/` 和 `scripts/`。将产物写入用户指定的项目，缺省使用当前工作区。如果项目已有对应的 `.agents/workflows/` 文件，优先用项目版，否则读下表对应的工作流。按任务使用 Codex 可用的文件读取、搜索和数据工具。
 
-用户指定 Markdown 或纯文本 PRD 时，使用 `kw-product:write-spec`（可用时）整理需求并直接交付所需格式。HTML 路由适用于 HTML PRD、原型与流程图。
+用户明确指定交付格式或只需要其中一版时，按本次要求交付，并执行下文的章节确认。用 `kw-product:write-spec`（可用时）辅助定义范围和验收标准。
 
 | 用户需要 | 工作流 | 默认产物 |
 |---|---|---|
-| 新写或修改 PRD、交互原型、流程图 | [PRD](assets/workflows/edu-pm-prd.md) | HTML PRD，按需配原型和图 |
+| 新写或修改 PRD、交互原型、流程图 | [PRD](assets/workflows/edu-pm-prd.md) | HTML PRD 和 Word PRD，按需配原型和图 |
 | 用户反馈整理、需求洞察 | [需求挖掘](assets/workflows/edu-pm-demand.md) | 需求洞察报告 |
 | 功能验收、上线前产品走查 | [验收](assets/workflows/edu-pm-acceptance.md) | 验收清单 |
 | 业务指标、漏斗、上线复盘 | [数据分析](assets/workflows/edu-pm-data-analysis.md) | 数据分析报告 |
 
 按用户要求交付。只做原型或验收清单时，优先用用户提供的 PRD 或当前项目的同名需求文档。缺少影响功能、权限或验收结果的关键信息时，提出聚焦的问题。
 
-需要同时交付 PRD、原型和验收清单时，先明确需求与验收口径，再用同一份 PRD 驱动原型和清单。三份产物放在同一个需求目录。交付前对齐需求编号、页面状态、业务规则与预期结果，引用实际交付的文件。
+需要同时交付 PRD、原型和验收清单时，先明确需求与验收口径，再用同一份 PRD 驱动原型和清单。本次所有产物放在同一个需求目录。交付前对齐需求编号、页面状态、业务规则与预期结果，引用实际交付的文件。
 
-工作流中的模拟反馈、章节确认和产物默认值按本入口所述的适用条件执行。同名需求已有文件夹时复用，按需创建 `需求文档/`、`原型/`、`流程图/`、`需求挖掘/`、`验收清单/` 或 `数据分析/`。HTML PRD 从[正文模板](assets/templates/prd-content.html)开始，交付前用[格式校验器](assets/scripts/validate_prd.py)检查，并核对占位符、业务规则与资源引用。项目已有对应模板或校验器时使用项目版。
+工作流中的模拟反馈和产物默认值按本入口的适用条件执行。同名需求已有文件夹时复用，按需创建 `需求文档/`、`原型/`、`流程图/`、`需求挖掘/`、`验收清单/` 或 `数据分析/`。HTML PRD 从[正文模板](assets/templates/prd-content.html)开始，交付前用[格式校验器](assets/scripts/validate_prd.py)检查，并核对占位符、业务规则与资源引用。项目已有对应模板或校验器时使用项目版。
 
 撰写文档与静态预览可直接使用随技能安装的资源。需要截图导出、复制时内嵌截图或浏览器写回时，复用项目中的导出服务。若需要部署项目资源，用 `python3 <技能目录>/scripts/initialize.py --project <目标目录> --no-launcher` 初始化（Windows 用 `py -3`）。在目标目录用 `python3 scripts/start_service.py --serve` 启动本地导出服务。用户要求 macOS 按需自动启动时可启用 LaunchAgent。工作流中提到的旧技能路径，统一从当前 `SKILL.md` 所在目录定位。
+
+## PRD 默认格式与章节确认
+
+- 默认同时交付可直接评审的 HTML PRD（`.html`）和可编辑的 Word PRD（`.docx`）。同一版本的两份文件放在该需求的 `需求文档/` 中，使用同一正文、章节清单、需求编号和验收标准。用户明确指定其中一种或其他格式时，按指定格式交付。
+- 固定顺序为 项目信息 → 版本记录 → 需求背景 → 需求目标 → 需求概述 → 业务流程图 → 交互流程图 → 详细方案 → 数据埋点 → 时序图。上线计划、附录按需放在时序图之后。
+- 始终保留项目信息、版本记录、需求背景、需求目标、详细方案。其余七章（需求概述、业务流程图、交互流程图、数据埋点、时序图、上线计划、附录）按需求大小和复杂度逐项判断。异常与边界写入所属功能的【边界说明】。
+- 写新 PRD 或调整现有 PRD 的章节前，先列出拟保留、拟省略的章节及理由，并征得用户确认。简单需求也用一次简短确认。用户已经明确确定了本次所有取舍时，按已确认的清单执行。只修订现有章节内容时沿用已确认的结构。这条确认规则也适用于项目版工作流。
+- 跨角色、多步骤或存在判断分支时优先保留业务流程图，展示责任、交接和判断分支。有跨页面跳转或关键交互状态时优先保留交互流程图，展示页面、触发操作、分支及状态。两章都保留时各自提交对应的图，并链接到实际原型场景。
+- Word 版使用可编辑的标题、段落和表格。把已确认保留的业务流程图与交互流程图以清晰图片嵌入，保留原型及证据链接，时序图源码保持为可复制文本。使用可用的 `documents:documents` 技能生成并逐页检查 Word 的渲染。
+- 交付前对照确认清单检查两版的实际章节、顺序、流程图、原型与证据链接。HTML 运行格式校验器，Word 核对布局、关键内容与可编辑性。
 
 ## 搭配已安装的 Codex 插件
 
@@ -39,8 +49,7 @@ description: 产品管理的统一入口，用于编写或更新 PRD、制作可
 - **Carry the confirmation into the document.** §1.4 maps each confirmed item to its PRD location: 核心改动 → 功能清单+详细方案; 成功指标 → 需求目标表; **不做 / 范围外 → 需求概述的「范围块」**; 背景证据 → 需求背景三段式; 跨页规则 → 需求概述规则表; 待确认项 → 正文末尾清单. A "不做" that was agreed verbally but never written into the PRD does not count as confirmed.
 - **Copy `assets/templates/prd-content.html` and fill it in — do not hand-write the HTML skeleton.** That file already carries the right class names, table headers, `colgroup` widths, `.desc-block` structure and `data-preview` placeholders; nearly every historical defect (descriptions using `<br>` instead of `<p>`, wrong column counts, missing `colgroup`) came from rebuilding the structure from memory.
 - **Run `assets/scripts/validate_prd.py` before delivery and report the result honestly.** It mechanically checks: core chapters present, 项目信息/版本记录 not merged, no standalone boundary chapter, continuous chapter numbering, all six table headers and column counts, meta-table is two-column, every 详细方案 row has `data-preview` and a non-empty 原型 cell, description cells use `.desc-block` with no `<br>` and no multi-number cramming, snake_case tracking names with six columns, `#prdContent` contains its own `<style>`, and the goal table header. A pass does NOT mean the document is good (visual and editorial quality still need human review) — but a failure means it is definitely not done.
-- **Fixed chapter order, tailored to the requirement's size — do not force all sections.** Order is 项目信息 → 版本记录 → 需求背景 → 需求目标 → 需求概述 → 业务流程图 → 交互流程图 → 详细方案 → 数据埋点 → 时序图（上线计划/附录 only if genuinely needed）. Core skeleton always kept: 项目信息, 版本记录 (two separate tables — never merged), 需求背景, 需求目标, 详细方案. The other seven (需求概述/业务流程图/交互流程图/数据埋点/时序图/上线计划/附录) are dropped when the requirement doesn't need them. Tailor optional sections to the requested deliverables and confirm consequential scope decisions when the request leaves them open. If 业务流程图 is dropped, skip producing the flowchart file; if 交互流程图 is dropped, skip the screenflow file. See edu-pm-prd.md §2.2 and §1.3.1.
-- **No standalone 异常/边界 chapter.** Boundary cases live in the owning row's 【边界说明】 block inside 详细方案 (§2.3.1), never as a document-level chapter.
+- 按「PRD 默认格式与章节确认」执行章节取舍，HTML 章节连续编号。业务流程图和交互流程图的写法见 edu-pm-prd.md §4。
 - **需求目标 states the user outcome and how it is measured, not implementation actions.** Quantifiable goals go in a 用户结果/衡量指标/统计口径/预期方向/目标值 table; with no real baseline write 「待基线确认」 — never invent a percentage. Non-quantifiable goals must still be observable and verifiable. Same rule for numbers cited in 需求背景: give the source or mark it unconfirmed. See §2.2 ④.
 - **The 原型 column accepts a high-res screenshot (`img.proto-shot` with real width/height, optionally linked to the clickable prototype) or an interactive iframe — do not convert existing screenshots into iframes.** See §2.3 and §3.3.
 - **详细方案 description cells: two mandatory blocks, the rest by a written test — not by habit** (§2.3.1). 【页面元素】and【交互说明】are mandatory in every cell. For any optional block the test is: **"if this page were deleted, would the rule still hold?"** If yes, it is a cross-page rule and belongs in the 需求概述 rule table (§2.3.1 ③), not repeated in each cell — 签到 1/3/7-day reward tiers, cumulative score/quota accounting, grant timing, role-permission matrices and global rate limits are the usual offenders. If no, it belongs to this page. Typical symptoms of over-writing: the same shared rule copy-pasted into three cells, or four-plus blocks in one cell. 【功能逻辑】 in particular should carry only rules that stop being true when this page is gone. Also: never write "同上" / "详见 x.x" — a row gets copied into review documents on its own; never pad with "无"; every item is its own `<p>`/`<li>` inside a `.desc-block`; multiple numbered items crammed into one paragraph is a defect. Absolutely no technical API/interface wording in description cells.
