@@ -1,0 +1,19 @@
+{
+  "name": "kw-product",
+  "version": "1.1.0",
+  "description": "编写 PRD、制作可交互原型和流程图、生成验收清单，并整理调研证据。结合 Anthropic Knowledge Work Plugins 与 PM Workflow 的 Codex 本地适配版。",
+  "author": {
+    "name": "Local Codex adaptation"
+  },
+  "repository": "https://github.com/anthropics/knowledge-work-plugins",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "产品管理",
+    "shortDescription": "编写 PRD、制作交互原型、生成验收清单并整理调研",
+    "developerName": "本地适配 · Anthropic 与 PM Workflow",
+    "category": "Productivity",
+    "defaultPrompt": [
+      "$kw-product:product-prd-workflow 根据这份需求说明，生成 PRD、可点击原型和验收清单。"
+    ]
+  }
+}

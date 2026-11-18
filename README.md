@@ -2,6 +2,29 @@
 
 PM Workflow 是一套面向产品经理的通用工作流，用来把一句需求描述逐步落成可评审、可截图、可持续迭代的产品交付物。核心流程适用于不同业务领域和产品形态。
 
+## 在 Codex 安装「产品管理」
+
+安装后可从同一个入口编写 PRD、制作可点击原型和生成验收清单。需要整套交付时，三份产物会使用同一份需求定义。
+
+### 使用 Codex CLI
+
+```sh
+codex plugin marketplace add howei-ai/product-prd-workflow --ref main
+codex plugin add kw-product@product-prd-workflow
+```
+
+### 使用 ChatGPT 桌面端
+
+克隆本仓库后，在 Codex 中打开仓库文件夹。重启桌面应用，在插件目录选择「产品管理工作流」，安装「产品管理」。市场清单位于 [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json)。
+
+### 调用工作流
+
+在技能选择器选择「PRD、原型与验收清单」，或直接输入下面这条提示。
+
+> `$kw-product:product-prd-workflow 根据这份需求说明，写 PRD、做可点击原型并生成验收清单。`
+
+也可以指定只写 Markdown PRD，或基于已有 PRD 生成原型或验收清单。插件内置需求规格和调研归纳技能。Data 和 Engineering 技能在可用时按需参与。PNG 导出需要按下文配置本地项目服务。
+
 ## Core Features
 
 - **PRD 生产**：输出可直接评审的 HTML PRD。章节顺序固定为 项目信息 → 版本记录 → 需求背景 → 需求目标 → 需求概述 → 业务流程图 → 交互流程图 → 详细方案 → 数据埋点 → 时序图，**按需求大小裁剪**——核心骨架（项目信息 / 版本记录 / 需求背景 / 需求目标 / 详细方案）恒定保留，其余 7 个按需省略；不设独立的「异常与边界」章（边界一律进对应功能的【边界说明】）；裁剪前会先列出保留/省略哪些章节并征得确认。
@@ -123,7 +146,7 @@ Windows 不需要它：服务本体就是你开着的那个窗口，没有东西
 
 ## Repository Scope
 
-这个仓库只存 skill 本体：
+仓库包含 [Codex 插件包](plugins/kw-product/) 以及原工作流文件：
 
 - `SKILL.md`
 - `scripts/`

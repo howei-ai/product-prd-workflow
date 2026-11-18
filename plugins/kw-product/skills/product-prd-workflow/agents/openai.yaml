@@ -1,0 +1,3 @@
+interface:
+  display_name: "PRD、原型与验收清单"
+  short_description: "编写产品需求文档、制作可点击原型，并按需求生成验收清单"

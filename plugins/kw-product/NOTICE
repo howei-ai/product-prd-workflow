@@ -1,0 +1,12 @@
+Derived from Anthropic Knowledge Work Plugins
+Source: https://github.com/anthropics/knowledge-work-plugins
+Commit: e91a134584eb798bac7fb0379358006a2b63b965
+License: Apache-2.0 (see LICENSE)
+
+Local changes: selected two skills per plugin; removed Claude-only argument-hint metadata; adapted invocation examples to Codex; added Codex usage and connector availability notes. No MCP configuration or account integrations are included.
+
+PM Workflow skill (skills/product-prd-workflow)
+Upstream: https://github.com/beautfulmt/PM-K12--skills
+Fork: https://github.com/howei-ai/product-prd-workflow
+Source commit: 9ffaeec62a55d50dc26aca8308d9aac67e237501
+The Apache-2.0 notice above applies to the Anthropic-derived content.

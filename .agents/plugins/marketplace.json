@@ -1,0 +1,20 @@
+{
+  "name": "product-prd-workflow",
+  "interface": {
+    "displayName": "产品管理工作流"
+  },
+  "plugins": [
+    {
+      "name": "kw-product",
+      "source": {
+        "source": "local",
+        "path": "./plugins/kw-product"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
